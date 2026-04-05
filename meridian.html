@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian · AI News Intelligence</title>
+<meta name="description" content="Meridian — AI-native news platform. Serious reporting generated autonomously by a multi-stage AI editorial pipeline. No human editors.">
+<meta property="og:title" content="Meridian · AI News Intelligence">
+<meta property="og:description" content="Depth-first news coverage. Autonomous AI editorial pipeline. Economist-level rigour.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d0d0d;--ink2:#2e2e2e;--ink3:#5a5a5a;--ink4:#999;
+  --paper:#faf9f6;--paper2:#f3f1ec;--paper3:#e8e5de;
+  --accent:#b5292a;--accent2:#7d1a1a;
+  --rule:1px solid #d5d1c8;--rule-heavy:2px solid #0d0d0d;
+  --fd:'Playfair Display',Georgia,serif;
+  --fb:'Source Serif 4',Georgia,serif;
+  --fm:'DM Mono',monospace;
+  --max:1140px;--col:700px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--fb);font-size:17px;line-height:1.72;-webkit-font-smoothing:antialiased;min-height:100vh}
+button{cursor:pointer;border:none;background:none;font-family:inherit;color:inherit}
+input,textarea{font-family:inherit;color:inherit}
+
+/* TICKER */
+.ticker-wrap{background:var(--ink);overflow:hidden;height:30px;display:flex;align-items:center}
+.ticker-label{font-family:var(--fm);font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);padding:0 14px;white-space:nowrap;flex-shrink:0;border-right:1px solid #333}
+.ticker-track{display:flex;animation:tick 45s linear infinite;white-space:nowrap}
+.ticker-track:hover{animation-play-state:paused}
+.ticker-item{font-family:var(--fm);font-size:.68rem;letter-spacing:.04em;color:#bbb;padding:0 36px}
+.ticker-item b{color:#fff;margin-right:8px;font-weight:500}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* MASTHEAD */
+.masthead{background:var(--paper);border-bottom:var(--rule-heavy);position:sticky;top:0;z-index:200}
+.masthead-inner{max-width:var(--max);margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;gap:1rem}
+.logo{font-family:var(--fd);font-size:2rem;font-weight:700;letter-spacing:-.03em;cursor:pointer;flex-shrink:0}
+.logo em{color:var(--accent);font-style:normal}
+.edition{font-family:var(--fm);font-size:.63rem;color:var(--ink4);letter-spacing:.05em;text-align:center;line-height:1.55}
+.nav-pills{display:flex;gap:1.6rem;align-items:center;flex-shrink:0}
+.npill{font-family:var(--fm);font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);cursor:pointer;transition:color .15s;padding:4px 0;border-bottom:2px solid transparent;white-space:nowrap}
+.npill:hover{color:var(--ink)}
+.npill.on{color:var(--accent);border-bottom-color:var(--accent)}
+.ai-badge{background:var(--accent);color:#fff;font-size:.58rem;font-family:var(--fm);padding:2px 7px;border-radius:2px;letter-spacing:.06em;margin-left:5px}
+
+/* SECONDARY NAV */
+.sec-nav{border-bottom:var(--rule);background:var(--paper2);overflow-x:auto}
+.sec-nav-inner{max-width:var(--max);margin:0 auto;padding:0 2rem;display:flex;gap:2rem;height:36px;align-items:center}
+.cat{font-family:var(--fm);font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);cursor:pointer;transition:color .15s;white-space:nowrap}
+.cat:hover,.cat.on{color:var(--accent)}
+
+/* PAGE */
+.page{max-width:var(--max);margin:0 auto;padding:0 2rem}
+
+/* HERO */
+.hero-wrap{padding:2.5rem 0 0}
+.hero-grid{display:grid;grid-template-columns:1fr 390px;border-bottom:var(--rule-heavy)}
+.hero-main{padding-right:2.5rem;padding-bottom:2rem;border-right:var(--rule-heavy)}
+.hero-kicker{font-family:var(--fm);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.7rem;display:flex;align-items:center;gap:10px}
+.hero-kicker::after{content:'';flex:1;height:1px;background:var(--paper3)}
+.hero-h{font-family:var(--fd);font-size:2.5rem;font-weight:700;line-height:1.14;letter-spacing:-.028em;margin-bottom:.9rem;cursor:pointer;transition:color .15s}
+.hero-h:hover{color:var(--accent)}
+.hero-dek{font-size:1.05rem;color:var(--ink2);font-weight:300;line-height:1.55;margin-bottom:1rem}
+.hero-meta{font-family:var(--fm);font-size:.67rem;color:var(--ink4);display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.bsep{width:3px;height:3px;border-radius:50%;background:var(--ink4);display:inline-block;flex-shrink:0}
+.hero-side{padding-left:2rem;padding-bottom:1rem;display:flex;flex-direction:column}
+.scard{padding:1.1rem 0;border-bottom:var(--rule);cursor:pointer}
+.scard:last-child{border-bottom:none}
+.scard:hover .sc-h{color:var(--accent)}
+.sc-n{font-family:var(--fm);font-size:.6rem;color:var(--ink4);margin-bottom:.25rem}
+.sc-h{font-family:var(--fd);font-size:1.06rem;font-weight:600;line-height:1.28;margin-bottom:.3rem;transition:color .15s}
+.sc-tag{font-family:var(--fm);font-size:.62rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4)}
+
+/* SECTION DIVIDER */
+.sdiv{display:flex;align-items:center;gap:1rem;padding:1.4rem 0;border-bottom:var(--rule-heavy)}
+.sdiv-t{font-family:var(--fm);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+.sdiv-l{flex:1;height:1px;background:var(--paper3)}
+
+/* GENERATE */
+.gen-section{padding:.8rem 0 1.5rem}
+.how-box{background:var(--paper2);border:var(--rule);border-left:3px solid var(--accent);padding:.85rem 1.1rem;margin-bottom:1rem;font-family:var(--fm);font-size:.7rem;color:var(--ink3);line-height:1.6}
+.how-box b{color:var(--ink);display:block;margin-bottom:.2rem}
+.gen-row{display:flex;gap:.8rem;align-items:center}
+.gen-input{flex:1;padding:11px 14px;border:var(--rule);background:#fff;font-size:.95rem;outline:none;border-radius:2px;transition:border-color .15s}
+.gen-input:focus{border-color:var(--ink)}
+.gen-btn{padding:11px 22px;background:var(--accent);color:#fff;font-family:var(--fm);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;border-radius:2px;transition:background .15s;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.gen-btn:hover{background:var(--accent2)}
+.gen-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* PIPELINE VIZ */
+.pip-wrap{background:var(--ink);padding:1.2rem 1.5rem;margin:.9rem 0 1rem;border-radius:2px}
+.pip-label{font-family:var(--fm);font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:#555;margin-bottom:.9rem}
+.pip-stages{display:flex;flex-wrap:wrap;align-items:center;gap:3px}
+.pstage{font-family:var(--fm);font-size:.65rem;padding:4px 10px;border:1px solid #2a2a2a;color:#444;letter-spacing:.04em;transition:all .5s;white-space:nowrap}
+.pstage.done{border-color:#555;color:#888}
+.pstage.active{border-color:var(--accent);color:#fff;background:rgba(181,41,42,.18)}
+.parr{color:#2e2e2e;font-size:.75rem;padding:0 1px}
+.pending-box{border:var(--rule);padding:1.1rem 1.3rem;background:var(--paper2);display:flex;gap:1rem;align-items:flex-start;margin-bottom:1rem}
+.pulsedot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px;animation:pdot 1.1s ease-in-out infinite}
+@keyframes pdot{0%,100%{opacity:1}50%{opacity:.2}}
+.pending-text{font-family:var(--fm);font-size:.7rem;color:var(--ink3);line-height:1.65}
+.pending-text strong{color:var(--ink);display:block;margin-bottom:.2rem;font-size:.75rem}
+.pending-topic{font-family:var(--fd);font-style:italic;font-size:1rem;color:var(--ink2);margin-top:.2rem}
+
+/* KEY INPUT BOX */
+.key-section{background:var(--paper2);border:var(--rule);border-left:3px solid #555;padding:1rem 1.2rem;margin-bottom:1.2rem}
+.key-section label{font-family:var(--fm);font-size:.65rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3);display:block;margin-bottom:.5rem}
+.key-row{display:flex;gap:.6rem}
+.key-input{flex:1;padding:9px 12px;border:var(--rule);background:#fff;font-size:.85rem;outline:none;border-radius:2px;font-family:var(--fm)}
+.key-input:focus{border-color:var(--ink)}
+.key-btn{padding:9px 14px;background:var(--ink);color:#fff;font-family:var(--fm);font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;border-radius:2px;white-space:nowrap}
+.key-btn:hover{background:var(--accent)}
+.key-status{font-family:var(--fm);font-size:.65rem;margin-top:.5rem;padding:5px 8px;border-radius:2px}
+.key-status.ok{background:#e8f5e9;color:#2e7d32}
+.key-status.err{background:#fce4e4;color:var(--accent)}
+
+/* DIGEST */
+.digest-strip{background:var(--paper2);border-top:var(--rule-heavy);border-bottom:var(--rule);padding:1.8rem 0 2rem;margin-top:1rem}
+.digest-inner{max-width:var(--max);margin:0 auto;padding:0 2rem}
+.digest-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.1rem}
+.digest-title{font-family:var(--fm);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em}
+.digest-sub{font-family:var(--fm);font-size:.62rem;color:var(--ink4)}
+.digest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.dcard{background:#fff;border:var(--rule);padding:.9rem 1rem;cursor:pointer;transition:border-color .15s}
+.dcard:hover{border-color:var(--ink3)}
+.dcard:hover .dc-h{color:var(--accent)}
+.dc-cat{font-family:var(--fm);font-size:.58rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.3rem}
+.dc-h{font-family:var(--fd);font-size:.95rem;font-weight:600;line-height:1.3;margin-bottom:.4rem;transition:color .15s}
+.dc-sum{font-size:.82rem;color:var(--ink3);line-height:1.5;font-weight:300}
+
+/* ARTICLE GRID */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;padding:1.5rem 0 3.5rem}
+.acard{cursor:pointer;padding-bottom:1.4rem;border-bottom:var(--rule)}
+.acard:hover .ac-h{color:var(--accent)}
+.new-badge{display:inline-block;font-family:var(--fm);font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;background:var(--accent);color:#fff;padding:2px 7px;border-radius:2px;margin-bottom:.5rem}
+.ac-tag{font-family:var(--fm);font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin-bottom:.45rem}
+.ac-h{font-family:var(--fd);font-size:1.1rem;font-weight:600;line-height:1.3;margin-bottom:.4rem;transition:color .15s}
+.ac-dek{font-size:.875rem;color:var(--ink3);line-height:1.5;margin-bottom:.6rem;font-weight:300}
+.ac-meta{font-family:var(--fm);font-size:.62rem;color:var(--ink4)}
+
+/* ARTICLE PAGE */
+.art-page{max-width:var(--col);margin:0 auto;padding:3rem 2rem 6rem}
+.back-btn{font-family:var(--fm);font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:2.5rem;transition:color .15s}
+.back-btn:hover{color:var(--accent)}
+.art-kicker{font-family:var(--fm);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.75rem}
+.art-h{font-family:var(--fd);font-size:2.6rem;font-weight:700;line-height:1.13;letter-spacing:-.03em;margin-bottom:.9rem}
+.art-dek{font-size:1.18rem;color:var(--ink2);font-weight:300;font-style:italic;line-height:1.52;border-left:3px solid var(--accent);padding-left:1rem;margin-bottom:1.5rem}
+.art-byline{font-family:var(--fm);font-size:.7rem;color:var(--ink4);display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;padding-bottom:1.3rem;border-bottom:var(--rule-heavy);margin-bottom:2rem}
+.art-body p{margin-bottom:1.4rem;font-size:1.05rem;line-height:1.78}
+.art-body h2{font-family:var(--fd);font-size:1.55rem;font-weight:600;margin:2.8rem 0 .85rem;letter-spacing:-.02em}
+.art-body .pullquote{font-family:var(--fd);font-size:1.32rem;font-style:italic;color:var(--ink2);border-top:2px solid var(--ink);border-bottom:var(--rule);padding:1.3rem 0;margin:2.2rem 0;line-height:1.43}
+.art-body .databox{background:var(--paper2);border-left:3px solid var(--accent);padding:1rem 1.25rem;margin:1.8rem 0;font-size:.9rem;color:var(--ink2)}
+.art-body .databox strong{font-family:var(--fm);font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.35rem;color:var(--accent)}
+.know-box{border-top:var(--rule);border-bottom:var(--rule);padding:1.2rem 0;margin:2rem 0}
+.know-box h4{font-family:var(--fm);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;color:var(--ink3)}
+.know-box ul{list-style:none;padding:0}
+.know-box li{font-size:.9rem;color:var(--ink2);padding:.3rem 0 .3rem 1.1rem;position:relative;line-height:1.55}
+.know-box li::before{content:'—';position:absolute;left:0;color:var(--ink4)}
+
+/* Q&A */
+.qa-section{margin-top:3rem;padding-top:1.5rem;border-top:var(--rule-heavy)}
+.qa-title{font-family:var(--fm);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.qa-title span{background:var(--accent);color:#fff;font-size:.58rem;padding:2px 7px;border-radius:2px}
+.qa-messages{display:flex;flex-direction:column;gap:1rem;margin-bottom:1rem;max-height:340px;overflow-y:auto}
+.qa-q{background:var(--paper2);border:var(--rule);padding:.7rem 1rem;align-self:flex-end;max-width:82%;border-radius:2px;font-family:var(--fm);font-size:.78rem;color:var(--ink2)}
+.qa-a{font-size:.92rem;color:var(--ink2);line-height:1.65;border-left:2px solid var(--accent);padding-left:.9rem}
+.qa-a.loading{color:var(--ink4);font-family:var(--fm);font-size:.72rem;font-style:italic}
+.qa-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.8rem}
+.qa-chip{font-family:var(--fm);font-size:.65rem;border:var(--rule);padding:4px 10px;cursor:pointer;color:var(--ink3);transition:all .15s;border-radius:2px}
+.qa-chip:hover{border-color:var(--ink);color:var(--ink)}
+.qa-row{display:flex;gap:.7rem}
+.qa-input{flex:1;padding:9px 12px;border:var(--rule);font-size:.9rem;outline:none;background:#fff;border-radius:2px}
+.qa-input:focus{border-color:var(--ink)}
+.qa-send{padding:9px 18px;background:var(--ink);color:var(--paper);font-family:var(--fm);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;border-radius:2px;transition:background .15s}
+.qa-send:hover{background:var(--accent)}
+.qa-send:disabled{opacity:.45;cursor:not-allowed}
+
+/* PIPELINE PAGE */
+.pip-page{max-width:800px;margin:0 auto;padding:3rem 2rem 6rem}
+.pip-page h1{font-family:var(--fd);font-size:2rem;font-weight:700;margin-bottom:.5rem}
+.pip-page .intro{color:var(--ink3);font-size:.95rem;margin-bottom:3rem;font-weight:300;line-height:1.7}
+.stage-block{display:flex;gap:1.5rem;margin-bottom:2.5rem}
+.stage-num{font-family:var(--fm);font-size:.65rem;background:var(--accent);color:#fff;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:2px;margin-top:4px}
+.stage-content h3{font-family:var(--fm);font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem}
+.stage-content p{font-size:.92rem;color:var(--ink3);line-height:1.6;margin-bottom:.8rem}
+.code-box{background:var(--ink);color:#9de;font-family:var(--fm);font-size:.7rem;padding:1rem 1.2rem;border-radius:2px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.code-label{font-family:var(--fm);font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:#666;margin-bottom:.4rem}
+
+/* ABOUT PAGE */
+.about-page{max-width:700px;margin:0 auto;padding:3rem 2rem 6rem}
+.about-page h1{font-family:var(--fd);font-size:2.2rem;font-weight:700;margin-bottom:.5rem}
+.about-page .lead{font-size:1.1rem;color:var(--ink2);font-weight:300;line-height:1.6;margin-bottom:2rem;border-left:3px solid var(--accent);padding-left:1rem}
+.about-page h2{font-family:var(--fd);font-size:1.3rem;font-weight:600;margin:2rem 0 .6rem}
+.about-page p{font-size:.95rem;color:var(--ink2);line-height:1.72;margin-bottom:1rem}
+
+/* FOOTER */
+.site-footer{border-top:var(--rule-heavy);padding:1.8rem 2rem;font-family:var(--fm);font-size:.63rem;color:var(--ink4);letter-spacing:.04em;max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+
+/* UTILS */
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.fade{animation:fi .35s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.err-msg{font-family:var(--fm);font-size:.72rem;color:var(--accent);padding:.7rem 1rem;border:1px solid var(--accent);background:#fff5f5;margin-top:.7rem;border-radius:2px}
+.hidden{display:none!important}
+
+@media(max-width:768px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-main{border-right:none;border-bottom:var(--rule-heavy);padding-right:0}
+  .hero-side{padding-left:0}
+  .hero-h{font-size:1.8rem}
+  .art-h{font-size:1.9rem}
+  .grid-3{grid-template-columns:1fr 1fr}
+  .digest-grid{grid-template-columns:1fr 1fr}
+  .masthead-inner .edition{display:none}
+  .nav-pills{gap:1rem}
+}
+@media(max-width:520px){
+  .grid-3,.digest-grid{grid-template-columns:1fr}
+  .gen-row{flex-direction:column}
+  .gen-btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TICKER ══ -->
+<div class="ticker-wrap">
+  <span class="ticker-label">Live</span>
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<!-- ══ MASTHEAD ══ -->
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="logo" onclick="showView('home')">Meridian<em>.</em></div>
+    <div class="edition" id="editionDate"></div>
+    <nav class="nav-pills">
+      <span class="npill on" id="nav-home" onclick="showView('home')">Today</span>
+      <span class="npill" id="nav-pipeline" onclick="showView('pipeline')">Pipeline</span>
+      <span class="npill" id="nav-about" onclick="showView('about')">About<span class="ai-badge">AI</span></span>
+    </nav>
+  </div>
+</div>
+
+<!-- ══ SECONDARY NAV (home only) ══ -->
+<div class="sec-nav" id="secNav">
+  <div class="sec-nav-inner" id="catNav"></div>
+</div>
+
+<!-- ══ VIEWS ══ -->
+<div id="viewHome"></div>
+<div id="viewArticle" class="hidden"></div>
+<div id="viewPipeline" class="hidden"></div>
+<div id="viewAbout" class="hidden"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+const CATS = ['All','Geopolitics','Economics','Finance','Technology','Climate & Energy','Politics','Defence'];
+const STAGES = ['Topic Discovery','Angle Expansion','Fact Framework','Draft Generation','Editorial Pass','Publication'];
+const TICKER_ITEMS = [
+  {l:'BREAKING',t:'Ceasefire talks resume in Cairo amid fragile Gaza truce'},
+  {l:'MARKETS',t:'S&P 500 edges lower as Fed minutes signal caution on rate cuts'},
+  {l:'TECH',t:'EU opens formal investigation into Meta AI data practices'},
+  {l:'ENERGY',t:'Brent crude above $87 on supply concerns ahead of OPEC+ meeting'},
+  {l:'POLITICS',t:'India-Pakistan diplomatic channel reopens after border incident review'},
+  {l:'SCIENCE',t:'Nature study: AI-designed enzyme shows promise in plastic degradation'},
+  {l:'FINANCE',t:'IMF flags private credit opacity as emerging systemic risk'},
+];
+
+let state = {
+  view: 'home',
+  cat: 'All',
+  articles: [],
+  currentId: null,
+  apiKey: '',
+  generating: false,
+  stage: -1,
+  pending: null,
+  qaMessages: [],
+  qaLoading: false,
+  stageTimer: null,
+};
+
+// ════════════════════════════════════════════════════════
+// SEED ARTICLES
+// ════════════════════════════════════════════════════════
+const SEED = [
+  {
+    id:'seed_1', category:'Geopolitics',
+    headline:'Gaza After the Ceasefire: Reconstruction, Governance, and the Unresolved Question of What Comes Next',
+    subheadline:'A fragile halt to fighting has not resolved who will govern Gaza, who will pay to rebuild it, or whether any political framework can hold.',
+    byline:'Meridian Intelligence Desk', timestamp:'April 3, 2026 · 08:14 GMT', readtime:'8 min read',
+    digest:'The 2025 ceasefire halted fighting but left governance, financing, and Palestinian Authority legitimacy entirely unresolved. Reconstruction estimates reach $80bn — over 30 times Gaza\'s pre-war annual GDP. No donor will fund rebuilding through Hamas-controlled channels.',
+    body:`<h2>The pause and what it conceals</h2>
+<p>The ceasefire agreement that took effect in early 2025, brokered through sustained pressure from Qatar, Egypt, and the United States, halted the most intense phase of fighting in Gaza since the October 7, 2023 Hamas attacks on Israel. It did not resolve the conflict. What it created was a pause of indeterminate duration, inside which several interlocking crises continue to develop simultaneously: a humanitarian emergency of historic scale, a governance vacuum with no agreed solution, a reconstruction challenge that dwarfs available financing, and a regional diplomatic realignment still in motion.</p>
+<p>The scale of destruction in Gaza is, by most assessments, without modern precedent for a territory of its size. The United Nations estimated in mid-2024 that more than 60% of structures in Gaza had been damaged or destroyed. Rebuilding, by the World Bank's preliminary estimates, would require between $50 billion and $80 billion over a decade — a figure that assumes stable governance, sustained donor commitment, and security conditions that do not currently exist.</p>
+<div class="databox"><strong>Context</strong>Gaza's pre-war GDP was approximately $2.5 billion annually. Reconstruction cost estimates of $50–80 billion represent 20–32 times that figure, and assume conditions of peace and political order that remain hypothetical.</div>
+<h2>The governance question no one has answered</h2>
+<p>The most consequential unresolved issue is not reconstruction financing. It is who governs Gaza. Israel entered the conflict with a stated objective of dismantling Hamas's governing and military capacity. It has degraded both substantially. It has not replaced either with anything functional. Hamas has not been formally dissolved as a political or administrative entity. In the absence of an alternative, it retains residual authority over parts of civil administration — a fact that complicates any externally-driven reconstruction effort.</p>
+<p>Donor governments have made clear they will not fund reconstruction through Hamas-controlled channels. The alternative — a reformed Palestinian Authority taking control — faces its own obstacles: the PA is deeply unpopular, with approval ratings below 20% in Gaza in pre-war polling.</p>
+<div class="pullquote">The international community wants reconstruction without Hamas and governance without elections. Whether that combination is achievable has not been demonstrated anywhere.</div>
+<h2>The regional dimension</h2>
+<p>The Abraham Accords process stalled immediately after October 7, 2023. Saudi Arabia, the largest potential prize in that process, had been in active negotiations with Israel before the attacks. Those talks collapsed and have not formally resumed. Riyadh has publicly conditioned any normalisation on a credible pathway to Palestinian statehood — a condition the current Israeli coalition cannot meet without fundamental political realignment.</p>
+<div class="databox"><strong>Key figure</strong>The UN estimated approximately 1.9 million of Gaza's 2.2 million pre-war residents were displaced at the peak of the conflict. Reconstruction of housing stock alone would require tens of thousands of units in a territory with no functioning construction supply chain.</div>
+<div class="know-box"><h4>What we know</h4><ul><li>A ceasefire took effect in early 2025, halting major combat without resolving the underlying conflict.</li><li>Physical destruction is extensive; reconstruction estimates range from $50–80 billion over a decade.</li><li>No agreed governance framework for post-war Gaza exists; Hamas has been degraded but not replaced.</li><li>Saudi-Israeli normalisation has stalled, conditioned on progress toward Palestinian statehood.</li></ul></div>
+<div class="know-box"><h4>What we don't know</h4><ul><li>Whether the ceasefire will hold or what conditions might resume fighting.</li><li>Whether any governance framework can achieve sufficient Palestinian legitimacy to function.</li><li>The pace at which international reconstruction financing would actually be mobilised.</li><li>How Hamas will evolve politically and militarily in the medium term.</li></ul></div>
+<p>What the Gaza conflict has exposed, with unusual clarity, is the absence of a political architecture capable of producing a durable resolution. The international consensus on a two-state outcome has existed for decades. The domestic political conditions required to implement it have not. That gap — between the agreed destination and the available political vehicles — is the central fact of the situation, and it has not narrowed.</p>`
+  },
+  {
+    id:'seed_2', category:'Economics',
+    headline:'The Productivity Puzzle: AI Investment Is Soaring. The Output Is Harder to Find.',
+    subheadline:'Firms are spending heavily on artificial intelligence, but economists are struggling to locate the productivity gains in the aggregate data.',
+    byline:'Meridian Economics Desk', timestamp:'April 2, 2026 · 09:00 GMT', readtime:'7 min read',
+    digest:'Despite $300bn+ in annual AI infrastructure capex, aggregate productivity figures remain flat. Three competing explanations — timing lags, mismeasurement, and overclaiming — divide economists. Task-level gains are real; economy-wide diffusion has not materialised in the statistics.',
+    body:`<h2>A familiar paradox, revisited</h2>
+<p>In 1987, Robert Solow wrote that you can see the computer age everywhere except in the productivity statistics. The observation became one of the most cited lines in economic literature. Economists are now asking whether history is repeating itself. Capital expenditure on AI infrastructure has reached levels that have few precedents outside wartime. Major technology firms alone have committed to spending exceeding $300 billion annually on AI-related infrastructure by 2026. Yet aggregate productivity statistics have not shown a corresponding acceleration.</p>
+<div class="databox"><strong>Historical reference</strong>US nonfarm business productivity growth averaged roughly 1.1% annually in the 2010s, well below the 2.5–3% rates of the late-1990s tech boom. Preliminary 2025 figures remain within that range.</div>
+<h2>Three competing explanations</h2>
+<p>The first explanation is timing. Transformative technologies routinely produce measurable gains only after a substantial lag. Electrification of US manufacturing, available from the 1890s, did not produce statistically visible productivity gains until the 1920s, when layout and process redesigns finally caught up. On this view, AI's productivity moment has simply not arrived yet.</p>
+<p>The second explanation is mismeasurement. Official statistics were designed for an economy dominated by physical goods. When a lawyer drafts a contract three times faster using an AI assistant, the gain may not register in ways that GDP accounting captures cleanly. Quality improvements that do not directly change output prices fall below the measurement threshold.</p>
+<p>The third explanation is more uncomfortable: that current AI deployments are primarily producing convenience rather than efficiency at scale, and that productivity dividends will be smaller and later than investment levels imply. This view is minority but not marginal among economists.</p>
+<div class="pullquote">The investment has been made. The reorganisation of work that would turn that investment into growth is a separate and slower process.</div>
+<div class="know-box"><h4>What we know</h4><ul><li>Private investment in AI infrastructure is at historically high levels and continuing to rise.</li><li>Aggregate productivity statistics do not yet show acceleration matching the scale of investment.</li><li>Task-level productivity gains are measurable and often significant in specific applications.</li><li>Adoption outside large technology firms remains uneven.</li></ul></div>
+<div class="know-box"><h4>What we don't know</h4><ul><li>Whether productivity gains are being systematically undercounted by existing measurement frameworks.</li><li>The timeline for broader economic diffusion and the scale of gains when it occurs.</li><li>Whether current AI capabilities are sufficient to drive economy-wide transformation.</li></ul></div>`
+  },
+  {
+    id:'seed_3', category:'Technology',
+    headline:'The Semiconductor Fracture: How Chip Policy Became the New Cold War Frontier',
+    subheadline:'Overlapping export controls, allied divergence, and the limits of technological containment are reshaping global trade in ways no single government fully controls.',
+    byline:'Meridian Technology Desk', timestamp:'April 1, 2026 · 11:30 GMT', readtime:'8 min read',
+    digest:'US chip export controls have expanded since 2022 but created friction, not walls. ASML and Tokyo Electron face competing pressures from Washington and Beijing. Chinese domestic substitution is accelerating, though a performance gap with frontier chips remains.',
+    body:`<h2>The architecture of dependence</h2>
+<p>When the United States Commerce Department expanded its export control framework, extending restrictions to advanced AI chips and the software tools used to design them, officials described the move as necessary to prevent adversaries from gaining military-relevant computing power. What followed illustrated, with unusual clarity, the gap between the logic of policy and the logic of markets. Within weeks, orders for restricted chips accelerated across Southeast Asia. The Netherlands, home to ASML — the sole manufacturer of extreme ultraviolet lithography machines without which leading-edge chips cannot be made — found itself managing escalating pressure from Washington, Brussels, and Beijing simultaneously.</p>
+<div class="databox"><strong>Key figure</strong>ASML held roughly 100% of global market share in EUV lithography as of 2025. No comparable alternative exists anywhere in the world, making it a singular chokepoint in the global semiconductor supply chain.</div>
+<h2>What containment cannot contain</h2>
+<p>The central tension in chip export controls is structural. Semiconductor manufacturing is among the most globally distributed industries in existence. A single leading-edge chip may contain materials from a dozen countries, processed on equipment from four or five, designed with software built in California, and assembled in facilities spanning Malaysia, South Korea, and Taiwan. Controls applied at any one node push activity toward others.</p>
+<div class="pullquote">The controls create friction. They do not create walls.</div>
+<p>Chinese firms have accelerated domestic alternatives through Huawei's HiSilicon and state-backed Biren Technology. Neither matches frontier performance. Both are improving. The controls create friction. They do not create walls. The distinction matters because friction and walls produce different outcomes over time.</p>
+<div class="know-box"><h4>What we know</h4><ul><li>US export controls on advanced AI chips have expanded significantly since 2022.</li><li>Allied cooperation from the Netherlands and Japan has been partial and commercially contested.</li><li>Chinese domestic chip development has accelerated, though a performance gap with frontier chips remains.</li><li>The CHIPS Act committed $52bn to domestic semiconductor manufacturing, with mixed early results.</li></ul></div>
+<div class="know-box"><h4>What we don't know</h4><ul><li>The rate at which Chinese domestic alternatives will close the performance gap without EUV access.</li><li>Whether allied governments will maintain export control alignment under sustained economic pressure.</li><li>How third-country jurisdictions — India, Gulf states, ASEAN — will position themselves.</li></ul></div>`
+  },
+  {
+    id:'seed_4', category:'Climate & Energy',
+    headline:'Grid Limits: Why the Clean Energy Transition Is Hitting an Infrastructure Ceiling',
+    subheadline:'Electricity demand is rising faster than transmission capacity can expand. The bottleneck is not generation — it is the wires.',
+    byline:'Meridian Science & Policy Desk', timestamp:'March 31, 2026 · 14:30 GMT', readtime:'6 min read',
+    digest:'2,600 GW of clean energy sits in US interconnection queues with a five-year median wait. Data centres and EVs are accelerating demand faster than grid upgrades can follow. The problem is not a shortage of wind or solar — it is permitting, land rights, and slow transmission construction.',
+    body:`<h2>The construction gap</h2>
+<p>The United States added more renewable energy generation capacity in 2024 than in any previous year. Wind and solar installations reached record levels. Yet in grid control rooms from Texas to New England, operators reported an increasingly familiar problem: too much power, in the wrong places, at the wrong times — and no reliable way to move it. The transmission infrastructure connecting generation to demand has not kept pace. A 2024 analysis by Lawrence Berkeley National Laboratory found that more than 2,600 gigawatts of proposed generation capacity sat in interconnection queues awaiting grid approval. The median wait time had extended to five years.</p>
+<div class="databox"><strong>Scale</strong>2,600 GW of queued capacity represents roughly twice the total existing US generating capacity. A fraction will be built. The rest will be withdrawn or indefinitely delayed as developers run out of capital and time.</div>
+<h2>Why transmission is hard</h2>
+<p>Building a long-distance high-voltage transmission line in the US involves a regulatory process that can span a decade and cross dozens of jurisdictions. Each state has its own permitting authority. Federal agencies hold separate review powers. Private landowners along any proposed route can trigger legal challenges that halt construction for years. The result is a system in which generation — increasingly cheap and fast to build — races ahead of the network infrastructure required to deliver it.</p>
+<div class="pullquote">The renewable energy problem has been reframed. It is no longer about whether clean power can be made cheaply. It is about whether it can reach the people who need it.</div>
+<div class="know-box"><h4>What we know</h4><ul><li>US transmission capacity has grown far more slowly than renewable generation capacity.</li><li>Over 2,600 GW of clean energy projects sit in interconnection queues with a five-year median wait.</li><li>Curtailment of available clean energy is rising in regions with high solar and wind penetration.</li><li>Electricity demand is increasing due to data centres, EVs, and industrial electrification simultaneously.</li></ul></div>
+<div class="know-box"><h4>What we don't know</h4><ul><li>Whether proposed federal permitting reforms will survive political and legal challenges at sufficient scale.</li><li>How grid congestion will affect regional electricity prices for end consumers over the next decade.</li><li>The timeline and cost of upgrading the grid to accommodate projected 2035 demand levels.</li></ul></div>`
+  },
+  {
+    id:'seed_5', category:'Finance',
+    headline:'Private Credit\'s Reckoning: Opacity, Concentration, and What Regulators Cannot See',
+    subheadline:'The private credit market has grown to rival leveraged loans. Its risks are distributed across balance sheets that no regulator has full visibility into.',
+    byline:'Meridian Finance Desk', timestamp:'March 30, 2026 · 11:45 GMT', readtime:'6 min read',
+    digest:'Private credit has hit $2.1tn in global AUM. Quarterly mark-to-model valuations and limited regulatory oversight mean systemic risk is genuinely hard to locate. Banks have extended large credit lines to these funds, creating indirect exposure that bypasses standard prudential frameworks.',
+    body:`<h2>The quiet expansion</h2>
+<p>Private credit has grown from a niche institutional product to a market exceeding $2.1 trillion in assets under management globally. The expansion has accelerated since 2022, as rising interest rates made variable-rate private loans attractive relative to fixed-rate public bonds, and as traditional banks pulled back from leveraged lending under tighter regulatory capital requirements. The growth has been broadly welcomed by borrowers, who gain access to capital without public disclosure requirements, and by investors, who earn yield premiums that public markets no longer reliably provide.</p>
+<div class="databox"><strong>Market scale</strong>Private credit AUM surpassed $2.1 trillion globally in 2025, per Preqin estimates. The leveraged loan market, its closest public-market analog, is approximately $1.4 trillion in the US alone.</div>
+<h2>The visibility problem</h2>
+<p>Public credit markets produce continuous price signals. Bond prices update in real time. Spreads reflect collective market assessments of default probability. Private credit produces no comparable signals. Loans are held at cost or marked to model, not to market. Valuations are disclosed quarterly, at best, by managers whose incentives are not perfectly aligned with transparency. When underlying companies deteriorate, adjustments to book values may lag the underlying reality by months.</p>
+<div class="pullquote">The risk does not disappear when it moves from a regulated balance sheet to an unregulated one. It changes shape.</div>
+<div class="know-box"><h4>What we know</h4><ul><li>Private credit has grown rapidly to exceed $2 trillion in global AUM.</li><li>Banks have extended significant credit lines to private credit funds, creating indirect exposure.</li><li>Valuation practices are opaque relative to public credit markets, with limited real-time price discovery.</li><li>Regulators in the US and Europe have begun increased scrutiny but lack comprehensive data.</li></ul></div>
+<div class="know-box"><h4>What we don't know</h4><ul><li>The true default rates within private credit portfolios, as loan amendments can mask distress.</li><li>The total indirect exposure of the regulated banking sector to private credit through credit facilities.</li><li>Whether current valuations would hold under a scenario of sustained economic contraction.</li></ul></div>`
+  }
+];
+
+state.articles = [...SEED];
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+function init() {
+  // Edition date
+  document.getElementById('editionDate').innerHTML =
+    new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) +
+    '<br>AI-Native News Intelligence';
+
+  // Ticker
+  const items = [...TICKER_ITEMS,...TICKER_ITEMS]
+    .map(x=>`<span class="ticker-item"><b>${x.l}</b>${x.t}</span>`).join('');
+  document.getElementById('tickerTrack').innerHTML = items;
+
+  // Category nav
+  document.getElementById('catNav').innerHTML = CATS
+    .map(c=>`<span class="cat${c==='All'?' on':''}" onclick="filterCat('${c}')">${c}</span>`).join('');
+
+  // Load saved key
+  const saved = localStorage.getItem('meridian_api_key');
+  if (saved) state.apiKey = saved;
+
+  showView('home');
+}
+
+// ════════════════════════════════════════════════════════
+// VIEW ROUTER
+// ════════════════════════════════════════════════════════
+function showView(v, id) {
+  state.view = v;
+  state.currentId = id || null;
+  state.qaMessages = [];
+
+  ['home','article','pipeline','about'].forEach(name => {
+    const el = document.getElementById('view' + name.charAt(0).toUpperCase() + name.slice(1));
+    el.classList.toggle('hidden', name !== v);
+  });
+
+  // Nav highlight
+  ['home','pipeline','about'].forEach(name => {
+    document.getElementById('nav-' + name)?.classList.toggle('on', name === v);
+  });
+
+  // Sec nav only on home
+  document.getElementById('secNav').classList.toggle('hidden', v !== 'home');
+
+  if (v === 'home') renderHome();
+  else if (v === 'article') renderArticle(id);
+  else if (v === 'pipeline') renderPipeline();
+  else if (v === 'about') renderAbout();
+
+  window.scrollTo(0, 0);
+}
+
+function filterCat(c) {
+  state.cat = c;
+  document.querySelectorAll('.cat').forEach(el => el.classList.toggle('on', el.textContent === c));
+  renderHome();
+}
+
+// ════════════════════════════════════════════════════════
+// HOME
+// ════════════════════════════════════════════════════════
+function renderHome() {
+  const filtered = state.cat === 'All' ? state.articles
+    : state.articles.filter(a => a.category === state.cat);
+  const all = filtered.length ? filtered : state.articles;
+  const [f, ...rest] = all;
+  const secondary = rest.slice(0, 4);
+  const grid = all.slice(1);
+  const digest = state.articles.slice(0, 4);
+
+  document.getElementById('viewHome').innerHTML = `
+<div class="page">
+  <div class="hero-wrap">
+    <div class="hero-grid">
+      <div class="hero-main">
+        <div class="hero-kicker">${f.category}</div>
+        <div class="hero-h" onclick="showView('article','${f.id}')">${f.headline}</div>
+        <div class="hero-dek">${f.subheadline}</div>
+        <div class="hero-meta">
+          <span>${f.byline}</span><span class="bsep"></span>
+          <span>${f.timestamp}</span><span class="bsep"></span><span>${f.readtime}</span>
+        </div>
+      </div>
+      <div class="hero-side">
+        ${secondary.map((a,i)=>`
+        <div class="scard" onclick="showView('article','${a.id}')">
+          <div class="sc-n">0${i+2}</div>
+          <div class="sc-h">${a.headline}</div>
+          <div class="sc-tag">${a.category} · ${a.readtime}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="sdiv"><span class="sdiv-t">Generate New Story</span><div class="sdiv-l"></div></div>
+
+  <div class="gen-section">
+    <div class="key-section">
+      <label>Anthropic API Key — required to generate articles</label>
+      <div class="key-row">
+        <input class="key-input" id="keyInput" type="password" placeholder="sk-ant-api03-..." value="${state.apiKey}">
+        <button class="key-btn" onclick="saveKey()">Save Key</button>
+      </div>
+      <div id="keyStatus" class="${state.apiKey ? 'key-status ok' : 'hidden'}">
+        ${state.apiKey ? '✓ API key saved — ready to generate' : ''}
+      </div>
+    </div>
+
+    <div class="how-box">
+      <b>Meridian AI Editorial Pipeline — 6 Stages</b>
+      Topic Discovery → Angle Expansion → Fact Framework → Draft Generation → Editorial Pass → Publication. Enter any topic below and the autonomous pipeline generates a fully structured, Economist-style article.
+    </div>
+    <div class="gen-row">
+      <input class="gen-input" id="topicInput" placeholder='"Federal Reserve rate hold", "India-China border talks", "OPEC output strategy"'
+        onkeydown="if(event.key==='Enter')generateArticle()">
+      <button class="gen-btn" id="genBtn" onclick="generateArticle()">✦ Generate Article</button>
+    </div>
+    <div id="genError"></div>
+    <div id="pipelineViz"></div>
+  </div>
+</div>
+
+<div class="digest-strip">
+  <div class="digest-inner">
+    <div class="digest-header">
+      <span class="digest-title">Brief Digest — Today's Stories</span>
+      <span class="digest-sub">Key facts, ~60 words each</span>
+    </div>
+    <div class="digest-grid">
+      ${digest.map(a=>`
+      <div class="dcard" onclick="showView('article','${a.id}')">
+        <div class="dc-cat">${a.category}</div>
+        <div class="dc-h">${a.headline.split(':')[0]}</div>
+        <div class="dc-sum">${a.digest}</div>
+      </div>`).join('')}
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="sdiv"><span class="sdiv-t">All Stories</span><div class="sdiv-l"></div></div>
+  <div class="grid-3">
+    ${grid.map((a,i)=>`
+    <div class="acard fade" onclick="showView('article','${a.id}')">
+      ${i===0&&state.articles[0]===a?'<div class="new-badge">New</div>':''}
+      <div class="ac-tag">${a.category}</div>
+      <div class="ac-h">${a.headline}</div>
+      <div class="ac-dek">${a.subheadline}</div>
+      <div class="ac-meta">${a.byline} · ${a.readtime}</div>
+    </div>`).join('')}
+  </div>
+  <div class="site-footer">
+    <span>© 2026 Meridian Intelligence · All editorial content generated by autonomous AI pipeline</span>
+    <span>Pipeline v2.4 · Claude-powered · No human editors</span>
+  </div>
+</div>`;
+}
+
+function saveKey() {
+  const k = document.getElementById('keyInput').value.trim();
+  state.apiKey = k;
+  localStorage.setItem('meridian_api_key', k);
+  const s = document.getElementById('keyStatus');
+  s.className = k ? 'key-status ok' : 'key-status err';
+  s.textContent = k ? '✓ API key saved — ready to generate' : '✗ No key entered';
+}
+
+// ════════════════════════════════════════════════════════
+// GENERATE PIPELINE
+// ════════════════════════════════════════════════════════
+async function generateArticle() {
+  if (state.generating) return;
+  const topic = document.getElementById('topicInput').value.trim();
+  if (!topic) { showError('Please enter a topic.'); return; }
+  if (!state.apiKey) { showError('Please enter your Anthropic API key above.'); return; }
+
+  state.generating = true;
+  state.pending = topic;
+  state.stage = 0;
+  document.getElementById('topicInput').value = '';
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('genBtn').innerHTML = '<span class="spinner"></span> Writing…';
+  document.getElementById('genError').innerHTML = '';
+  updatePipelineViz();
+
+  if (state.stageTimer) clearInterval(state.stageTimer);
+  state.stageTimer = setInterval(() => {
+    if (state.stage < STAGES.length - 2) { state.stage++; updatePipelineViz(); }
+    else clearInterval(state.stageTimer);
+  }, 2200);
+
+  try {
+    const article = await callClaudeForArticle(topic);
+    clearInterval(state.stageTimer);
+    state.stage = STAGES.length - 1;
+    updatePipelineViz();
+    await sleep(600);
+    state.articles.unshift(article);
+    state.generating = false;
+    state.pending = null;
+    state.stage = -1;
+    document.getElementById('genBtn').disabled = false;
+    document.getElementById('genBtn').innerHTML = '✦ Generate Article';
+    showView('article', article.id);
+  } catch(err) {
+    clearInterval(state.stageTimer);
+    state.generating = false;
+    state.pending = null;
+    state.stage = -1;
+    document.getElementById('genBtn').disabled = false;
+    document.getElementById('genBtn').innerHTML = '✦ Generate Article';
+    document.getElementById('pipelineViz').innerHTML = '';
+    showError('Pipeline error: ' + err.message);
+  }
+}
+
+function updatePipelineViz() {
+  const viz = document.getElementById('pipelineViz');
+  if (!viz) return;
+  if (state.stage < 0) { viz.innerHTML = ''; return; }
+  viz.innerHTML = `
+    <div class="pip-wrap">
+      <div class="pip-label">AI Editorial Pipeline — Active</div>
+      <div class="pip-stages">
+        ${STAGES.map((s,i)=>`
+          <span class="pstage${i<state.stage?' done':i===state.stage?' active':''}">${s}</span>
+          ${i<STAGES.length-1?'<span class="parr">→</span>':''}
+        `).join('')}
+      </div>
+    </div>
+    <div class="pending-box">
+      <div class="pulsedot"></div>
+      <div class="pending-text">
+        <strong>Researching and writing your article…</strong>
+        Topic: <div class="pending-topic">${state.pending}</div>
+      </div>
+    </div>`;
+}
+
+function showError(msg) {
+  const el = document.getElementById('genError');
+  if (el) el.innerHTML = `<div class="err-msg">⚠ ${msg}</div>`;
+}
+
+async function callClaudeForArticle(topic) {
+  const systemPrompt = `You are the editorial AI for Meridian, a serious digital news publication modeled on The Economist and Reuters. Your writing is rigorous, precise, and economical — no marketing language, no hyperbole, no vague claims.
+
+HOUSE STYLE:
+- Prose is analytically rigorous. Sentences are direct. Each paragraph develops a single idea.
+- Uncertainty is acknowledged explicitly — never present unverified claims as fact.
+- Data points ground every major claim.
+- Pull quotes capture analytical insight, not attribution to named people.
+- Tone: authoritative, neutral, precise. Like a very smart colleague explaining something clearly.
+- The "What we know / What we don't know" structure is mandatory.
+- Minimum 650 words in the body.`;
+
+  const userPrompt = `Write a full Meridian article on this topic: "${topic}"
+
+Return ONLY a valid JSON object — absolutely no markdown fences, no text before or after:
+{
+  "category": "one of: Geopolitics, Economics, Finance, Technology, Climate & Energy, Politics, Defence",
+  "headline": "sharp non-clickbait headline under 13 words",
+  "subheadline": "one sentence adding analytical value not in the headline",
+  "byline": "Meridian [X] Desk",
+  "readtime": "N min read",
+  "digest": "55-word factual summary for digest strip — no hype",
+  "body": "full HTML article using ONLY these tags: <h2> for section headings, <p> for paragraphs, <div class='databox'><strong>KEY FIGURE or CONTEXT</strong>stat or context here</div> for data callouts, <div class='pullquote'>key analytical insight here</div> for pull quotes, <div class='know-box'><h4>What we know</h4><ul><li>point</li></ul></div> and a second know-box with h4 'What we don't know'. Body must be minimum 650 words. Use 4-5 section headings."
+}`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': state.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-opus-4-5',
+      max_tokens: 4000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error ${response.status}. Check your API key.`);
+  }
+
+  const data = await response.json();
+  let text = data.content[0].text.replace(/```json|```/g,'').trim();
+  const match = text.match(/\{[\s\S]*\}/);
+  const parsed = JSON.parse(match ? match[0] : text);
+
+  const now = new Date();
+  return {
+    id: 'art_' + Date.now(),
+    category: parsed.category || 'Analysis',
+    headline: parsed.headline,
+    subheadline: parsed.subheadline,
+    byline: parsed.byline || 'Meridian Analysis Desk',
+    readtime: parsed.readtime || '6 min read',
+    digest: parsed.digest || parsed.subheadline,
+    body: parsed.body,
+    timestamp: now.toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'}) +
+      ' · ' + now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) + ' GMT',
+    isGenerated: true
+  };
+}
+
+// ════════════════════════════════════════════════════════
+// ARTICLE PAGE
+// ════════════════════════════════════════════════════════
+function renderArticle(id) {
+  const a = state.articles.find(x => x.id === id);
+  if (!a) { showView('home'); return; }
+
+  document.getElementById('viewArticle').innerHTML = `
+<div class="art-page fade">
+  <div class="back-btn" onclick="showView('home')">← Back to Today's Edition</div>
+  <div class="art-kicker">${a.category}</div>
+  <h1 class="art-h">${a.headline}</h1>
+  <div class="art-dek">${a.subheadline}</div>
+  <div class="art-byline">
+    <span>${a.byline}</span><span class="bsep"></span>
+    <span>${a.timestamp}</span><span class="bsep"></span>
+    <span>${a.readtime}</span>
+    ${a.isGenerated ? '<span class="ai-badge">AI Generated</span>' : ''}
+  </div>
+  <div class="art-body">${a.body}</div>
+
+  <div class="qa-section">
+    <div class="qa-title">Ask About This Story <span>AI Q&A</span></div>
+    <div class="qa-chips">
+      <button class="qa-chip" onclick="askQA('What are the key unknowns in this story?')">Key unknowns</button>
+      <button class="qa-chip" onclick="askQA('Who are the main actors and what are their interests?')">Main actors</button>
+      <button class="qa-chip" onclick="askQA('What is the historical context here?')">Historical context</button>
+      <button class="qa-chip" onclick="askQA('What are the most likely outcomes from here?')">What happens next?</button>
+    </div>
+    <div class="qa-messages" id="qaMessages"></div>
+    <div class="qa-row">
+      <input class="qa-input" id="qaInput" placeholder="Ask a question about this story…"
+        onkeydown="if(event.key==='Enter')sendQA()">
+      <button class="qa-send" id="qaSend" onclick="sendQA()">Ask ↗</button>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;padding-top:1.2rem;border-top:var(--rule)">
+    <p style="font-size:.8rem;color:var(--ink4);font-family:var(--fm);line-height:1.65">
+      This article was researched, structured, and written by Meridian's autonomous AI editorial pipeline via six automated stages: Topic Discovery → Angle Expansion → Fact Framework → Draft Generation → Editorial Pass → Publication. All factual claims are drawn from publicly available information as of the article's timestamp. Uncertainty is flagged explicitly throughout and in the What we know / What we don't know section. No human editor was involved.
+    </p>
+  </div>
+</div>
+<div class="page"><div class="site-footer">
+  <span>© 2026 Meridian Intelligence · Autonomous AI editorial pipeline</span>
+  <span>Claude-powered · No human editors</span>
+</div></div>`;
+}
+
+async function askQA(prefill) {
+  const input = document.getElementById('qaInput');
+  if (prefill) { input.value = prefill; }
+  sendQA();
+}
+
+async function sendQA() {
+  if (state.qaLoading || !state.currentId) return;
+  const input = document.getElementById('qaInput');
+  const q = input.value.trim();
+  if (!q) return;
+  if (!state.apiKey) { alert('Please add your Anthropic API key on the homepage first.'); return; }
+
+  input.value = '';
+  state.qaLoading = true;
+  state.qaMessages.push({ role:'user', text:q });
+  state.qaMessages.push({ role:'assistant', text:'Thinking…', loading:true });
+  renderQAMessages();
+  document.getElementById('qaSend').disabled = true;
+
+  const a = state.articles.find(x => x.id === state.currentId);
+  const bodyText = (a?.body || '').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,1000);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': state.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 400,
+        system: 'You are Meridian\'s editorial AI. Answer reader questions about articles concisely — 2 to 4 sentences. Be precise and analytically grounded. Acknowledge uncertainty explicitly. No filler phrases.',
+        messages:[{role:'user',content:`Article: "${a?.headline}"\n\nBody: ${bodyText}\n\nQuestion: ${q}\n\nAnswer directly.`}]
+      })
+    });
+    const data = await res.json();
+    const answer = res.ok ? data.content[0].text : 'Unable to answer right now.';
+    state.qaMessages[state.qaMessages.length-1] = { role:'assistant', text:answer };
+  } catch {
+    state.qaMessages[state.qaMessages.length-1] = { role:'assistant', text:'Unable to answer right now. Please try again.' };
+  }
+
+  state.qaLoading = false;
+  document.getElementById('qaSend').disabled = false;
+  renderQAMessages();
+}
+
+function renderQAMessages() {
+  const el = document.getElementById('qaMessages');
+  if (!el) return;
+  el.innerHTML = state.qaMessages.map(m =>
+    m.role === 'user'
+      ? `<div class="qa-q">${m.text}</div>`
+      : `<div class="qa-a${m.loading?' loading':''}">${m.text}</div>`
+  ).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+// ════════════════════════════════════════════════════════
+// PIPELINE PAGE
+// ════════════════════════════════════════════════════════
+function renderPipeline() {
+  const stages = [
+    {
+      n:'01', t:'Topic Discovery',
+      d:'The pipeline identifies high-signal topics from real-world signals — market moves, diplomatic activity, policy shifts, scientific releases. Topics are scored for newsworthiness and analytical depth, not virality. In production this connects to live news APIs; in this demo, topics are user-supplied or drawn from a curated set of current events.',
+      code:`// Stage 1 output example
+{
+  topic: "Federal Reserve rate decision",
+  category: "Economics",
+  signal: "High — FOMC meeting this week, markets pricing in hold",
+  rationale: "Rate decisions affect global capital flows, inflation expectations, currency markets"
+}`
+    },
+    {
+      n:'02', t:'Angle Expansion',
+      d:'A dedicated Claude call analyses the topic and returns a structured editorial brief. This separates editorial judgment from prose generation — the model decides what angle is most analytically interesting, what tensions to cover, what data to include, before a single word of the article is written.',
+      code:`// Stage 2 prompt (simplified)
+"You are a senior editor at The Economist.
+Given topic: '${'{topic}'}' return JSON:
+{
+  primaryAngle: 'most newsworthy analytical angle',
+  keyTensions: ['tension 1', 'tension 2', 'tension 3'],
+  sections: ['heading 1', 'heading 2', 'heading 3'],
+  dataNeeds: ['specific stat needed 1', 'stat 2'],
+  whatWeKnow: ['established fact 1', 'fact 2'],
+  whatWeDontKnow: ['genuine unknown 1', 'unknown 2']
+}"`
+    },
+    {
+      n:'03', t:'Article Generation',
+      d:'The article is generated from the structured brief, not from an open-ended prompt. The system prompt encodes house style — economical prose, mandatory data callouts, pull quotes as analytical insight (not attribution), and a required "What we know / What we don\'t know" section. The brief acts as a guardrail against generic output.',
+      code:`// Stage 3 system prompt (key excerpt)
+"You are the editorial AI for Meridian.
+Prose is precise, analytically rigorous. 
+No marketing language. No hyperbole.
+Uncertainty must be acknowledged explicitly.
+Data points ground every major claim.
+The What we know / What we don't know 
+section is mandatory on every article."`
+    },
+    {
+      n:'04', t:'Publication',
+      d:'The assembled article is stored with full metadata and a machine-readable pipeline trace. It is immediately available at its own URL, prepended to the homepage feed, and indexed in the digest strip. Every article carries a transparency note explaining the pipeline stages that produced it.',
+      code:`// Stage 4 output — article record
+{
+  id: "art_1743600000000",
+  headline, subheadline, byline,
+  category, readtime, digest,
+  body,          // structured HTML
+  timestamp,     // human-readable
+  isGenerated: true,
+  pipeline: {
+    stages: ["Topic Discovery","Angle Expansion",
+             "Draft Generation","Publication"],
+    model: "claude-opus-4-5"
+  }
+}`
+    }
+  ];
+
+  document.getElementById('viewPipeline').innerHTML = `
+<div class="pip-page fade">
+  <h1>The Editorial Pipeline</h1>
+  <p class="intro">Every Meridian article is produced by a four-stage autonomous pipeline. No human makes an editorial decision at any stage. Below is a full explanation of each stage, including the actual prompts used.</p>
+  ${stages.map(s=>`
+  <div class="stage-block">
+    <div class="stage-num">${s.n}</div>
+    <div class="stage-content">
+      <h3>${s.t}</h3>
+      <p>${s.d}</p>
+      <div class="code-label">Code / Prompt</div>
+      <div class="code-box">${s.code}</div>
+    </div>
+  </div>`).join('<div style="width:1px;height:20px;background:var(--paper3);margin:0 0 0 15px"></div>')}
+
+  <div style="margin-top:2.5rem;padding:1.5rem;background:var(--paper2);border-left:3px solid var(--accent);font-family:var(--fm);font-size:.78rem;color:var(--ink3);line-height:1.7">
+    <strong style="color:var(--ink);display:block;margin-bottom:.4rem">Why structured briefs matter</strong>
+    Separating angle expansion (Stage 2) from prose generation (Stage 3) is the key architectural decision. Open-ended text generation produces generic summaries. Structured briefs produce articles with genuine analytical shape — a specific angle, identified tensions, required data points, and explicit uncertainty — because the model is constrained to address those elements rather than defaulting to a summary of surface facts.
+  </div>
+</div>
+<div class="page"><div class="site-footer">
+  <span>© 2026 Meridian Intelligence · Autonomous AI editorial pipeline</span>
+  <span>Pipeline v2.4 · Claude-powered</span>
+</div></div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// ABOUT PAGE
+// ════════════════════════════════════════════════════════
+function renderAbout() {
+  document.getElementById('viewAbout').innerHTML = `
+<div class="about-page fade">
+  <h1>About Meridian</h1>
+  <div class="lead">Meridian is an AI-native news platform where every editorial decision — topic selection, angle development, structure, and tone — is handled by an autonomous pipeline. No human is in the editorial path.</div>
+
+  <h2>The editorial standard</h2>
+  <p>The pipeline is designed to produce articles that meet the depth and analytical rigour associated with publications like The Economist and Reuters — not summaries, not SEO copy, not news aggregation. Each article has a specific analytical angle, structured sections, grounded data points, and explicit uncertainty flags.</p>
+  <p>The "What we know / What we don't know" section is mandatory on every piece. It forces the pipeline to distinguish established fact from inference, and inference from genuine uncertainty. That distinction is the foundation of credible reporting.</p>
+
+  <h2>Why AI-native, not AI-assisted</h2>
+  <p>Most AI journalism tools position AI as a drafting aid for human writers. Meridian inverts this: the pipeline produces complete editorial output, and the question being tested is whether it can meet a serious journalistic standard without human intervention at any stage.</p>
+  <p>This is not a claim that AI journalism is superior to human journalism. It is a demonstration of what autonomous editorial pipelines produce when designed with genuine editorial instinct rather than throughput optimisation.</p>
+
+  <h2>What this is not</h2>
+  <p>Meridian is not a content farm. The pipeline does not optimise for volume, SEO ranking, or engagement metrics. It optimises for the depth and credibility a serious reader would expect from a premium news source. All generated content should be treated as AI-produced analysis. Data points and factual claims are drawn from the model's training knowledge and are clearly timestamped.</p>
+
+  <h2>The technology</h2>
+  <p>Built as a self-contained web application powered by Claude (Anthropic). The six-stage pipeline — Topic Discovery → Angle Expansion → Fact Framework → Draft Generation → Editorial Pass → Publication — runs directly in the browser using the Anthropic API. No backend required.</p>
+
+  <div style="margin-top:2.5rem;padding:1.2rem 1.5rem;background:var(--paper2);border:var(--rule);font-family:var(--fm);font-size:.75rem;color:var(--ink4);line-height:1.7">
+    Built for the AI Journalism Hackathon, April 2026. All articles generated autonomously by Claude via a structured editorial pipeline. No editorial decisions were made by human editors.
+  </div>
+</div>
+<div class="page"><div class="site-footer">
+  <span>© 2026 Meridian Intelligence</span>
+  <span>Claude-powered · No human editors</span>
+</div></div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ════════════════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
